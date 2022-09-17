@@ -1,0 +1,10 @@
+from django.db import models
+
+class Course(models.Model):
+    name = models.CharField('Nome', max_length=150)
+    slug = models.SlugField('Atalho')
+    description = models.TextField('Descrição', blank=True)
+    start_date = models.DateField('Data de início', blank=True, null=True)
+    image = models.ImageField(upload_to='courses/images', verbose_name='Imagem')
+    created_at = models.DateTimeField('Criado em', auto_now_add=True)
+    updated_at = models.DateTimeField('Atualizado em', auto_now=True)
