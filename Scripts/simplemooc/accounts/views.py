@@ -4,7 +4,7 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 
-from .forms import RegisterForm, EditForm
+from .forms import RegisterForm, EditAccountForm
 
 @login_required
 def dashboard(request):
@@ -16,13 +16,13 @@ def edit(request):
     template_name='accounts/edit.html'
     context = {}
     if request.method == 'POST':
-        form = EditForm(request.POST, instance=request.user)
+        form = EditAccountForm(request.POST, instance=request.user)
         if form.is_valid():
             form.save()
-            form = EditForm(instance=request.user)
+            form = EditAccountForm(instance=request.user)
             context['success'] = True
     else:
-        form = EditForm(instance=request.user)
+        form = EditAccountForm(instance=request.user)
     context['form'] = form
     return render(request, template_name, context)
 
@@ -32,7 +32,7 @@ def edit_password(request):
     context = {}
     if request.method == 'POST':
         form = PasswordChangeForm(data=request.POST, user=request.user)
-        if form.is_valid:
+        if form.is_valid():
             form.save()
             context['success']=True
     else:
