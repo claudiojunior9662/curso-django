@@ -31,6 +31,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     def get_full_name(self):
         return str(self)
 
+    def get_absolute_url(self):
+        from django.urls import reverse
+        return reverse('accounts:password_reset_confirm', kwargs={'key': self.key})
+
     class Meta:
         verbose_name = 'Usuário'
         verbose_name_plural = 'Usuários'
