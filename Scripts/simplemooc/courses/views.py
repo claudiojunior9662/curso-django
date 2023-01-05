@@ -6,6 +6,8 @@ from django.contrib import messages
 from .models import Course, Enrollment, Comment
 from .forms import ContactCourse, CommentForm
 
+from .decorators import enrollment_required
+
 def index(request):
     courses = Course.objects.all()
     context = {
@@ -57,13 +59,9 @@ def undo_enrollment(request, slug):
     return render(request, template_name, context)
 
 @login_required
+@enrollment_required
 def announcements(request, slug):
-    course = get_object_or_404(Course, slug=slug)
-    if not request.user.is_staff:
-        enrollment = get_object_or_404(Enrollment, user=request.user, course=course)
-        if not enrollment.is_approved():
-            messages.error(request, 'Sua inscrição está pendente!')
-            return redirect('accounts:dashboard')
+    course = request.course
     context = {
         'course': course,
         'announcements': course.announcements.all()
@@ -72,13 +70,9 @@ def announcements(request, slug):
     return render(request, template_name, context)
 
 @login_required
+@enrollment_required
 def show_announcement(request, slug, pk):
-    course = get_object_or_404(Course, slug=slug)
-    if not request.user.is_staff:
-        enrollment = get_object_or_404(Enrollment, user=request.user, course=course)
-        if not enrollment.is_approved():
-            messages.error(request, 'Sua inscrição está pendente!')
-            return redirect('accounts:dashboard')
+    course = request.course
     announcement = get_object_or_404(course.announcements.all(), pk=pk)
     form = CommentForm(request.POST or None)
     if form.is_valid():
